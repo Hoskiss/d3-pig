@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Body tag is where we will append our SVG and SVG objects-->
+<body>
+</body>
+
+<!-- Load in the d3 library -->
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+
+var designSize = 300;
+var designRadius = 100;
+var margin = {top: 150, right: 150, bottom: 150, left: 150};
+var width = window.innerWidth - margin.left - margin.right;
+var height = window.innerHeight - margin.top - margin.bottom;
+
+//6. Y scale will use the randomly generate number
+var scale = d3.scaleLinear()
+  .domain([0, designSize]) // input
+  //.range([height, 0]); // output
+  .range([0, height]); // output
+
+function toRadians (angle) {
+  return angle * (Math.PI / 180);
+}
+
+var svg = d3.select("body").append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom);
+
+// (1/2)^0.5
+var earXY = Math.pow(0.5, 0.5);
+var earRadius = 2 - 0.5*Math.pow(6, 0.5) - 0.5*Math.pow(2, 0.5);
+earRadius = Math.pow(earRadius, 0.5);
+
+// we get the theta from math.atan
+var arcRightEar = d3.arc()
+  .innerRadius(earRadius*scale(designRadius))
+  .outerRadius(earRadius*scale(designRadius))
+  .startAngle(toRadians(-52.5))
+  .endAngle(toRadians(142.5));
+
+  // svg.append('g')
+  //   .attr('transform', 'translate(' + [margin.left+width/2+earXY*scale(designRadius), margin.top+height/2-earXY*scale(designRadius)] + ')')
+  //   .append("path")
+  //   .attr("stroke", "orange")
+  //   .attr("stroke-width", "3")
+  //   .attr('d', arcRightEar);
+
+var rightEarTheta = [256.5, 295.5, 334.5, 13.5];
+var rightEarNode = rightEarTheta.map(function(theta) { return {
+  "x": earRadius*scale(designRadius)*Math.cos(toRadians(theta)), "y": earRadius*scale(designRadius)*Math.sin(toRadians(theta)), "index": theta }; });
+
+  svg.append("g")
+    .attr('transform', 'translate(' + [margin.left+width/2+earXY*scale(designRadius), margin.top+height/2-earXY*scale(designRadius)] + ')')
+    .selectAll("whatever")
+    .data(rightEarNode)
+    .enter()
+    .append("circle")
+    .attr("cx", function(position){ return position.x; })
+    .attr("cy", function(position){ return position.y; })
+    .attr("r", "3")
+    .attr("stroke", "red")
+    .attr("stroke-width", "1");
+
+var arcLeftEar = d3.arc()
+  .innerRadius(earRadius*scale(designRadius))
+  .outerRadius(earRadius*scale(designRadius))
+  .startAngle(toRadians(-142.5))
+  .endAngle(toRadians(52.5));
+
+  // svg.append('g')
+  //   .attr('transform', 'translate(' + [margin.left+width/2-earXY*scale(designRadius), margin.top+height/2-earXY*scale(designRadius)] + ')')
+  //   .append("path")
+  //   .attr("stroke", "orange")
+  //   .attr("stroke-width", "3")
+  //   .attr('d', arcLeftEar);
+
+var leftEarTheta = [166.5, 205.5, 244.5, 283.5];
+var leftEarNode = leftEarTheta.map(function(theta) { return {
+  "x": earRadius*scale(designRadius)*Math.cos(toRadians(theta)), "y": earRadius*scale(designRadius)*Math.sin(toRadians(theta)), "index": theta }; });
+
+  svg.append("g")
+    .attr('transform', 'translate(' + [margin.left+width/2-earXY*scale(designRadius), margin.top+height/2-earXY*scale(designRadius)] + ')')
+    .selectAll("whatever")
+    .data(leftEarNode)
+    .enter()
+    .append("circle")
+    .attr("cx", function(position){ return position.x; })
+    .attr("cy", function(position){ return position.y; })
+    .attr("r", "3")
+    .attr("stroke", "red")
+    .attr("stroke-width", "1");
+
+  // svg.append("g")
+  //   .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+  //   .append("circle")
+  //   .attr("cx", width/2)
+  //   .attr("cy", height/2)
+  //   .attr("r", Math.abs(scale(designRadius)))
+  //   .attr("stroke", "orange")
+  //   .attr("stroke-width", "3")
+  //   .attr("fill", "none");
+
+var circleDegrees = 360;
+var faceNodeNumber = 36;
+var faceNode = d3.range(faceNodeNumber).map(function(theta) { return {
+  "x": designRadius*Math.cos(toRadians(circleDegrees/faceNodeNumber*theta)), "y": designRadius*Math.sin(toRadians(circleDegrees/faceNodeNumber*theta)), "index": theta }; });
+
+  svg.append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    .selectAll("whatever")
+    .data(faceNode)
+    .enter()
+    .append("circle")
+    .attr("cx", function(position){ return width/2 + scale(position.x); })
+    .attr("cy", function(position){ return height/2 + scale(position.y); })
+    .attr("r", function(position){ return position.index%3==0? 6: 3; })
+    .attr("stroke", "red")
+    .attr("stroke-width", "1");
+
+  // https://drive.google.com/file/d/0B7sgCv02zIBIcnl0d05fMF9XSTg/view
+  // svg.append("g")
+  //   .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+  //   .append("ellipse")
+  //   .attr("cx", width/2)
+  //   .attr("cy", height/2+0.25*scale(designRadius))
+  //   .attr("rx", 0.5*scale(designRadius))
+  //   .attr("ry", 0.35*scale(designRadius))
+  //   .attr("stroke", "orange")
+  //   .attr("stroke-width", "3")
+  //   .attr("fill", "none");
+
+var noseNodeNumber = 16;
+var noseNode = d3.range(noseNodeNumber).map(function(theta) { return {
+  "x": 0.5*designRadius*Math.cos(toRadians(circleDegrees/noseNodeNumber*theta)), "y": 0.35*designRadius*Math.sin(toRadians(circleDegrees/noseNodeNumber*theta)), "index": theta }; });
+
+  svg.append("g")
+    .attr("transform", "translate(" + [margin.left+width/2, margin.top+height/2+0.25*scale(designRadius)] + ")")
+    .selectAll("whatever")
+    .data(noseNode)
+    .enter()
+    .append("circle")
+    .attr("cx", function(position){ return scale(position.x); })
+    .attr("cy", function(position){ return scale(position.y); })
+    .attr("r", function(position){ return position.index%4==0? 6: 3; })
+    .attr("stroke", "red")
+    .attr("stroke-width", "1");
+
+  svg.append("g")
+    .attr("class", "nostril")
+    .attr("transform", "translate(" + [margin.left+width/2, margin.top+height/2+0.25*scale(designRadius)] + ")")
+    .append("circle")
+    .attr("cx", 0.15*scale(designRadius))
+    .attr("cy", 0)
+    .attr("r", 12)
+    .attr("stroke", "red")
+    .attr("stroke-width", "2");
+  d3.select(".nostril")
+    .append("circle")
+    .attr("cx", -0.15*scale(designRadius))
+    .attr("cy", 0)
+    .attr("r", 12)
+    .attr("stroke", "red")
+    .attr("stroke-width", "2");
+
+  svg.append("g")
+    .attr("class", "eye")
+    .attr("transform", "translate(" + [margin.left+width/2, margin.top+height/2-0.4*scale(designRadius)] + ")")
+    .append("circle")
+    .attr("cx", 0.3*scale(designRadius))
+    .attr("cy", 0)
+    .attr("r", 9)
+    .attr("stroke", "orange")
+    .attr("stroke-width", "2");
+  d3.select(".eye")
+    .append("circle")
+    .attr("cx", -0.3*scale(designRadius))
+    .attr("cy", 0)
+    .attr("r", 9)
+    .attr("stroke", "orange")
+    .attr("stroke-width", "2");
+
+</script>

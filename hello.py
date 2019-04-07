@@ -7,6 +7,10 @@ app = Flask(__name__)
 def index():
     return render_template('pig.html')
 
+@app.route("/dot/")
+def dot():
+    return render_template('pig_dot.html')
+
 @app.route("/example/")
 def example():
     return render_template('example.html')
